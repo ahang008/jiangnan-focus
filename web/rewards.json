@@ -1,0 +1,16 @@
+[
+  {"id":"teahouse","category":"建筑","name":"茶楼","desc":"西岸码头边一户人家翻成两层茶楼，檐下挂灯，临水而坐","model":"models/teahouse.glb"},
+  {"id":"pagoda","category":"建筑","name":"石塔","desc":"桥东立一座七级石塔，高过屋脊，远远就能望见","model":"models/pagoda.glb"},
+  {"id":"pavilion","category":"建筑","name":"凉亭","desc":"东岸一户人家改成临水小园，园里一座六角红柱凉亭","model":"models/pavilion.glb"},
+  {"id":"archway","category":"建筑","name":"牌坊","desc":"西岸拱桥前一户人家让出巷口，临河步道上立起一座三门石牌坊","model":"models/archway.glb"},
+  {"id":"egret","category":"生灵","name":"白鹭","desc":"东岸石阶边站着一只白鹭，偶尔转头看船","model":"models/egret.glb"},
+  {"id":"koi","category":"生灵","name":"锦鲤","desc":"河埠头对岸的浅水里游着几尾锦鲤，时不时跃出水面","model":"models/koi.glb"},
+  {"id":"cat","category":"生灵","name":"猫","desc":"东岸人家门口蹲着一只橘猫，看来往的船","model":"models/cat.glb"},
+  {"id":"lion","category":"生灵","name":"小石狮","desc":"拱桥两头各守一对小石狮","model":"models/lion.glb"},
+  {"id":"rain","category":"天气","name":"细雨","desc":"河面落起细雨，水上点点涟漪","model":""},
+  {"id":"fireflies","category":"天气","name":"萤火","desc":"两岸和水面上多出一群萤火，入夜越亮","model":""},
+  {"id":"snow","category":"天气","name":"飘雪","desc":"天上飘起细雪，慢慢落进河里","model":""},
+  {"id":"guqin","category":"声音","name":"古琴","desc":"隔一阵有人拨几声五声音阶的琴","model":""},
+  {"id":"raintiles","category":"声音","name":"雨打瓦片","desc":"屋瓦上细碎的雨点声","model":""},
+  {"id":"watchman","category":"声音","name":"更夫敲梆","desc":"隔很久响两下木梆，远处应一声锣","model":""}
+]

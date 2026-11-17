@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>江南入夜 · 专注夜航</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<div id="stage"></div>
+
+<div id="loader">
+  <div class="brush">江南入夜</div>
+  <div class="sub">水乡夜航 · 专注挂机</div>
+  <div class="drop"></div>
+</div>
+
+<div id="brand">
+  <div class="vert">江南入夜</div>
+  <div class="side">
+    <div class="seal">夜<br>航</div>
+    <div class="tag">君到姑苏见 · 人家尽枕河</div>
+  </div>
+</div>
+
+<div id="topbar">
+  <button class="iconbtn" id="albumBtn" title="收藏册" hidden>
+    <svg viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11"/><path d="M10 8h5"/></svg>
+  </button>
+  <button class="iconbtn" id="setBtn" title="设置">
+    <svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+  </button>
+  <button class="iconbtn" id="panelBtn" title="造境">
+    <svg viewBox="0 0 24 24"><path d="M3 19l6-8 4 5 3-3 5 6z"/><circle cx="16.5" cy="6.5" r="2"/></svg>
+  </button>
+  <button class="iconbtn" id="soundBtn" title="静音">
+    <svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path class="wv" d="M16 9c1.4 1.6 1.4 4.4 0 6"/><path class="wv" d="M18.5 6.5c2.6 3 2.6 8 0 11"/><line class="mute" x1="16" y1="9" x2="21" y2="15" style="display:none"/><line class="mute" x1="21" y1="9" x2="16" y2="15" style="display:none"/></svg>
+  </button>
+  <button class="iconbtn" id="fsBtn" title="全屏">
+    <svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+  </button>
+</div>
+
+<div id="demoSeal" hidden><span>演示数据</span><b>DEMO</b></div>
+
+<!-- 造境（原网页的画面控制），默认收起 -->
+<div id="panel" class="floatpanel" hidden>
+  <div class="head"><b>造境</b><span>CONTROLS</span><button class="x" data-close="panel" title="收起">&times;</button></div>
+  <div class="body">
+    <div class="grp"><div class="gt">光阴</div>
+      <div class="ctl"><div class="row"><label>时辰</label><span class="val" id="vTime">黄昏</span></div>
+        <div class="note">天色停在黄昏常亮；今日 token 让孔明灯升起、灯笼逐盏点亮</div></div>
+    </div>
+    <div class="grp"><div class="gt">灯火</div>
+      <div class="ctl"><div class="row"><label>灯笼亮度</label><span class="val" id="vLamp">1.0×</span></div>
+        <input type="range" id="cLamp" min="0.2" max="2" step="0.05" value="1"></div>
+      <div class="ctl"><div class="row"><label>檐下风力</label><span class="val" id="vWind">0.6</span></div>
+        <input type="range" id="cWind" min="0" max="2" step="0.05" value="0.6"></div>
+      <div class="ctl"><div class="row"><label>泛光</label><span class="val" id="vBloom">0.9</span></div>
+        <input type="range" id="cBloom" min="0" max="2" step="0.05" value="0.9"></div>
+    </div>
+    <div class="grp"><div class="gt">水雾</div>
+      <div class="ctl"><div class="row"><label>雾霭</label><span class="val" id="vFog">1.0×</span></div>
+        <input type="range" id="cFog" min="0.2" max="2.2" step="0.05" value="1"></div>
+      <div class="ctl"><div class="row"><label>水波</label><span class="val" id="vWave">1.0×</span></div>
+        <input type="range" id="cWave" min="0.1" max="2.5" step="0.05" value="1"></div>
+    </div>
+    <div class="grp"><div class="gt">行舟</div>
+      <div class="ctl"><div class="row"><label>船速</label><span class="val" id="vBoat">1.0×</span></div>
+        <input type="range" id="cBoat" min="0" max="2.5" step="0.05" value="1"></div>
+    </div>
+    <div class="grp"><div class="gt">画质</div>
+      <select id="cQuality">
+        <option value="ultra">超清 · 原生</option>
+        <option value="high">精绘 · 高</option>
+        <option value="mid" selected>均衡 · 中</option>
+        <option value="low">速写 · 低</option>
+      </select>
+      <div class="note" id="qNote" hidden>超清按屏幕原生分辨率渲染，水面倒影也更细，显卡负担明显更大；挂一整天建议用均衡。</div>
+    </div>
+    <div class="btnrow">
+      <button class="abtn" id="bReset">重置</button>
+      <button class="abtn" id="bGust">阵风</button>
+      <button class="abtn red" id="bShot">留影</button>
+    </div>
+  </div>
+</div>
+
+<!-- 设置 -->
+<div id="settings" class="floatpanel" hidden>
+  <div class="head"><b>设置</b><span>SETTINGS</span><button class="x" data-close="settings" title="收起">&times;</button></div>
+  <div class="body">
+    <div class="grp"><div class="gt">声音</div>
+      <div class="ctl"><div class="row"><label>音量</label><span class="val" id="vVol">30%</span></div>
+        <input type="range" id="cVol" min="0" max="100" step="1" value="30"></div>
+      <div class="switchrow"><label>静音</label><label class="sw"><input type="checkbox" id="cMute"><i></i></label></div>
+    </div>
+    <div class="grp"><div class="gt">规则</div>
+      <div class="numrow"><label>会话在干活：最近</label><input type="number" id="nActive" min="1" max="30" step="1"><span>分钟有动静</span></div>
+      <div class="numrow"><label>一段专注：累计</label><input type="number" id="nSegment" min="5" max="120" step="1"><span>分钟</span></div>
+      <div class="numrow"><label>允许停顿：不超过</label><input type="number" id="nGap" min="1" max="60" step="1"><span>分钟</span></div>
+      <div class="numrow"><label>会话结束：</label><input type="number" id="nEnd" min="2" max="120" step="1"><span>分钟没动静</span></div>
+      <div class="switchrow"><label>只算我在场的专注</label><label class="sw"><input type="checkbox" id="cPresent"><i></i></label></div>
+      <div class="note" id="presentNote">打开后，5 分钟内动过键盘或鼠标才累计专注；关着时 AI 自己跑也算</div>
+      <div class="btnrow"><button class="abtn red" id="bSaveRules">存下规则</button></div>
+      <div class="note" id="saveNote"></div>
+    </div>
+    <div class="grp"><div class="gt">反馈</div>
+      <div class="numrow"><label>每 <b id="fbUnit">1000</b> token：</label><select id="cFb" style="width:auto;padding:3px 6px"><option value="lantern">放孔明灯</option><option value="muyu">敲木鱼</option><option value="both">两样都要</option></select></div>
+      <div class="note">敲木鱼：左下角木鱼「笃」一声，功德 +1；每满 100 万 token 一声磬。</div>
+    </div>
+    <div class="grp"><div class="gt">孔明灯</div>
+      <div class="numrow"><label>今日 token 每满</label><select id="cUnit" style="width:auto;padding:3px 6px"><option value="500">500</option><option value="1000">1000</option><option value="2000">2000</option><option value="5000">5000</option></select><span>放一盏</span></div>
+      <div class="note">默认 1000：AI 在干活时大约 6 秒一盏。每满 100 万另有一盏大灯和一声风铃。</div>
+    </div>
+    <div class="grp"><div class="gt">回顾</div>
+      <div class="btnrow"><button class="abtn red" id="bRecap">生成今日回顾卡</button></div>
+      <div class="note">一张 1600x2000 的竖版图：今天的水乡截图和各平台用量，可以下载保存。</div>
+      <div class="switchrow"><label>隐藏项目名</label><label class="sw"><input type="checkbox" id="cHide"><i></i></label></div>
+      <div class="note">截图分享前建议打开。打开后船牌和回顾卡里的项目名显示为「项目 1、项目 2…」，分享截图不泄露项目名。</div>
+    </div>
+    <div class="grp"><div class="gt">归零</div>
+      <div class="note">把今天的在场专注、AI 独航、成段和正在攒的这一段清零。今天的 token（孔明灯）来自日志，不会清。</div>
+      <div class="btnrow" id="resetRow"><button class="abtn" id="bReset0">专注归零</button></div>
+      <div class="confirm" id="resetConfirm" hidden>
+        <div class="note warn">确定清零今天的专注记录？清了就回不来。</div>
+        <div class="btnrow"><button class="abtn" id="bResetNo">算了</button><button class="abtn red" id="bResetYes">确定归零</button></div>
+      </div>
+      <div class="note" id="resetNote"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 收藏册 -->
+<div id="album" class="floatpanel wide" hidden>
+  <div class="head"><b>收藏册</b><span id="albumCount">0 / 14</span><button class="x" data-close="album" title="收起">&times;</button></div>
+  <div class="body" id="albumBody"></div>
+</div>
+
+<!-- 机位，默认收起成一个小按钮 -->
+<div id="views" class="collapsed">
+  <div class="row" id="viewRow">
+    <button class="vbtn on" data-view="far">望全河</button>
+    <button class="vbtn" data-view="bridge">拱桥畔</button>
+    <button class="vbtn" data-view="pier">河埠头</button>
+    <button class="vbtn" data-view="eaves">檐灯下</button>
+    <button class="vbtn" data-view="boat">夜航随船</button>
+    <button class="vbtn" id="bOrbit">漫游</button>
+  </div>
+  <button class="vtoggle" id="vToggle" title="机位"><span>机位</span><b id="viewCur">望全河</b></button>
+</div>
+
+<div id="ribbon"><div class="dot" id="rbDot"></div><div class="t" id="rbTime">黄昏</div><div class="s" id="rbSub">落日衔桥</div><div class="tok" id="rbTok"></div></div>
+
+<!-- 专注进度 -->
+<div id="focus">
+  <button class="ring" id="ringBtn" title="专注进度">
+    <svg viewBox="0 0 80 80"><circle class="bg" cx="40" cy="40" r="34"/><circle class="tick" cx="40" cy="40" r="29"/><circle class="fg" id="ringFg" cx="40" cy="40" r="34"/></svg>
+    <span class="mid"><b id="fLeft">25</b><i>分</i></span>
+  </button>
+  <div class="info">
+    <div class="state" id="fState">静候</div>
+    <div class="stats">
+      <div><span>在场专注</span><b id="sPresent">0</b><i>分</i></div>
+      <div><span>AI 独航</span><b id="sSolo">0</b><i>分</i></div>
+      <div><span>今日成段</span><b id="sSeg">0</b><i>段</i></div>
+      <div><span>在干活</span><b id="sActive">0</b><i>个会话</i></div>
+    </div>
+    <div class="skybar" title="今日 token 让孔明灯升起、灯笼点亮"><div class="track"><i id="skyFill"></i></div><span id="skyText">距下一盏灯 还差 1000 token</span></div>
+  </div>
+  <button class="pend" id="pendSeal" title="有奖励待领" hidden><span>待领</span><em id="pendN">1</em></button>
+</div>
+
+<div id="offline" hidden>本地小程序没开：node server/focusd.mjs</div>
+<div id="logHint" hidden></div>
+<div id="hint" hidden>点一下画面开启水声</div>
+<div id="emptyHint" hidden></div>
+<div id="toast"></div>
+<div id="milestone"></div>
+
+<!-- 三选一 -->
+<div id="offer" hidden>
+  <div class="sheet">
+    <div class="otitle"><span class="seal">成</span><div><b id="offerTitle">一段专注已成</b><i>择其一，永留水乡</i></div></div>
+    <div class="cards" id="offerCards"></div>
+    <div class="ofoot"><span id="offerMsg"></span><button class="abtn" id="offerLater">稍后再选</button></div>
+  </div>
+</div>
+
+<div id="err"><div>此境需 WebGL 支持<br>请更换浏览器或开启硬件加速后再来夜航</div></div>
+
+<script src="vendor/three/build/three.min.js"></script>
+<script src="vendor/three/examples/js/shaders/CopyShader.js"></script>
+<script src="vendor/three/examples/js/shaders/LuminosityHighPassShader.js"></script>
+<script src="vendor/three/examples/js/shaders/FXAAShader.js"></script>
+<script src="vendor/three/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="vendor/three/examples/js/postprocessing/RenderPass.js"></script>
+<script src="vendor/three/examples/js/postprocessing/ShaderPass.js"></script>
+<script src="vendor/three/examples/js/postprocessing/MaskPass.js"></script>
+<script src="vendor/three/examples/js/postprocessing/UnrealBloomPass.js"></script>
+<script src="vendor/three/examples/js/controls/OrbitControls.js"></script>
+<script src="vendor/three/examples/js/utils/BufferGeometryUtils.js"></script>
+<script src="vendor/three/examples/js/objects/Reflector.js"></script>
+<script src="vendor/three/examples/js/loaders/GLTFLoader.js"></script>
+<script src="js/data.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/scene.js"></script>
+<script src="js/boats.js"></script>
+<script src="js/rewards3d.js"></script>
+<script src="js/skylanterns.js"></script>
+<script src="js/muyu.js"></script>
+<script src="js/board.js"></script>
+<script src="js/scenemodels.js"></script>
+<script src="js/nightmarket.js"></script>
+<script src="js/recap.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

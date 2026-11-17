@@ -1,0 +1,18 @@
+{
+  "_说明": "登记了的模型才会加载（没登记不发请求，控制台零报错）。boats：front 是模型船头朝向的本地轴（-x、x、z、-z），length 船长（米），sink 吃水（米），lamp 是船头灯笼在船上的位置 [x,y]（米，船头是 -x），pennant/lamp3d 为 true 时在模型上再叠代码做的平台旗和船灯。scene：house_a/b/c 的窗口锚点写在 js/scene.js 的 HOUSE_V 里；bridge 的 span 是桥长（米）；noticeboard 的 panel 是空白牌面在模型里的范围 [x0,x1,y0,y1]。",
+  "boats": {
+    "claude":   {"file": "models/platform/boat_claude.glb",   "front": "z", "length": 6.2, "sink": 0.22, "lamp": [-2.68, 1.32]},
+    "codex":    {"file": "models/platform/boat_codex.glb",    "front": "x", "length": 6.6, "sink": 0.25, "lamp": [-3.0, 1.31]},
+    "deepseek": {"file": "models/platform/boat_deepseek.glb", "front": "z", "length": 6.8, "sink": 0.22, "lamp": [-3.09, 0.9]},
+    "grok":     {"file": "models/platform/boat_grok.glb",     "front": "z", "length": 6.4, "sink": 0.25, "lamp": [-2.08, 1.48]},
+    "cursor":   {"file": "models/platform/boat_cursor.glb",   "front": "z", "length": 5.6, "sink": 0.22, "lamp": [-2.58, 1.04]},
+    "magpie":   {"file": "models/platform/boat_magpie.glb",   "front": "x", "length": 4.8, "sink": 0.2,  "lamp": [-2.3, 1.15], "lamp3d": true}
+  },
+  "scene": {
+    "bridge":      {"file": "models/scene/bridge_60k.glb", "span": 26.0},
+    "noticeboard": {"file": "models/scene/noticeboard_25k.glb", "panel": [-0.258, 0.254, 0.335, 0.687]},
+    "house_a":     {"file": "models/scene/house_a_40k.glb"},
+    "house_b":     {"file": "models/scene/house_b_40k.glb"},
+    "house_c":     {"file": "models/scene/house_c_40k.glb"}
+  }
+}

@@ -52,6 +52,17 @@ generation method is listed per file:
 | web/models/scene/house_a_40k.glb | Tripo API | 2026-11-17 |
 | web/models/scene/house_b_40k.glb | Tripo API | 2026-11-17 |
 | web/models/scene/house_c_40k.glb | Tripo API | 2026-11-17 |
+| web/models/scene/house_d_40k.glb | Tripo Studio | 2026-11-17 |
+| web/models/scene/house_e_40k.glb | Tripo Studio | 2026-11-17 |
+| web/models/scene/house_f_40k.glb | Tripo Studio | 2026-11-17 |
+| web/models/scene/house_g_40k.glb | Tripo Studio | 2026-11-17 |
+| web/models/scene/house_a_20k.glb | Tripo API (reduced to 20k faces for low quality) | 2026-11-17 |
+| web/models/scene/house_b_20k.glb | Tripo API (reduced to 20k faces for low quality) | 2026-11-17 |
+| web/models/scene/house_c_20k.glb | Tripo API (reduced to 20k faces for low quality) | 2026-11-17 |
+| web/models/scene/house_d_20k.glb | Tripo Studio (reduced to 20k faces for low quality) | 2026-11-17 |
+| web/models/scene/house_e_20k.glb | Tripo Studio (reduced to 20k faces for low quality) | 2026-11-17 |
+| web/models/scene/house_f_20k.glb | Tripo Studio (reduced to 20k faces for low quality) | 2026-11-17 |
+| web/models/scene/house_g_20k.glb | Tripo Studio (reduced to 20k faces for low quality) | 2026-11-17 |
 
 6. No warranty.
 

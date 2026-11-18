@@ -6,7 +6,7 @@ const D=JN.Data, F=JN.Fleet, RW=JN.Rewards, A=JN.Audio, UI=JN.UI, SKY=JN.Sky, MU
 /* 反馈方式：设置里的 feedbackStyle；演示模式可用 ?fb=muyu|lantern|both 临时覆盖 */
 const FB_FIX=new URLSearchParams(location.search).get('fb');
 const FBS=['lantern','muyu','both'];
-const fbStyle=s=>D.mode==='demo'&&FBS.includes(FB_FIX)?FB_FIX:(FBS.includes(s.settings.feedbackStyle)?s.settings.feedbackStyle:'lantern');
+const fbStyle=s=>D.mode==='demo'&&FBS.includes(FB_FIX)?FB_FIX:(FBS.includes(s.settings.feedbackStyle)?s.settings.feedbackStyle:'both');
 /* 出效果图用（只在演示模式）：?hide=hint,views,focus,ribbon,topbar,brand 隐藏无关的界面 */
 if(D.mode==='demo'){ const h=new URLSearchParams(location.search).get('hide'); if(h) for(const id of h.split(',')){ const el=document.getElementById(id.trim()); if(el) el.style.visibility='hidden'; } }
 /* 奖励系统暂不启用（不弹三选一、不显示收藏、不加载任何模型），代码保留；

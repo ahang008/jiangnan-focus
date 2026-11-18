@@ -19,11 +19,13 @@ let dprCap = 1.5, W=innerWidth, H=innerHeight;
 /* 出效果图用的超清档（只在演示模式 ?demo=1&q=ultra）：像素比不封顶（跟设备一致）、水面反射 2048、关掉自适应降分辨率。
    正常页面不受影响 */
 const QP=new URLSearchParams(location.search);
-const ULTRA_URL=QP.get('demo')==='1'&&QP.get('q')==='ultra';
+/* 演示模式可用 ?q=ultra|high|mid|low 固定画质（出效果图/验收用）；?demo=1&q=ultra 即原来的超清档 */
+const DEMO_Q=(QP.get('demo')==='1'&&['ultra','high','mid','low'].includes(QP.get('q')))?QP.get('q'):null;
+const ULTRA_URL=DEMO_Q==='ultra';
 /* 「超清 · 原生」也放进造境的画质选项；画质选择记在本机，刷新后还在 */
 const Q_KEY='jnfocus.quality';
 (function(){ let q=null; try{ q=localStorage.getItem(Q_KEY); }catch(e){}
-  if(ULTRA_URL) S.quality='ultra'; else if(['ultra','high','mid','low'].includes(q)) S.quality=q; })();
+  if(DEMO_Q) S.quality=DEMO_Q; else if(['ultra','high','mid','low'].includes(q)) S.quality=q; })();
 const isUltra=()=>S.quality==='ultra';
 const PR_BASE=1.5; // 光点（灯笼光晕、萤火）按 1.5 倍像素比调过大小；超清档按比例放大，看起来一样大
 const clock = new THREE.Clock();
@@ -249,7 +251,7 @@ function hash01(i){ const x=Math.sin(i*127.1+311.7)*43758.5453; return x-Math.fl
 function addWindow(x,y,z,ry,p,sx,sy){
   _e.set(0,ry,0); _q.setFromEuler(_e);
   _m4.compose(new THREE.Vector3(x,y,z),_q,new THREE.Vector3(sx||1,sy||1,1));
-  windows.push({m:_m4.clone(), pos:new THREE.Vector3(x,y,z), ry, p, slot:curSlot});
+  windows.push({m:_m4.clone(), pos:new THREE.Vector3(x,y,z), ry, p, slot:curSlot, drop:false});
 }
 
 /* lantern anchors */
@@ -346,35 +348,69 @@ function house(side, z, w, twoFloor, seed){
 
 let seedI=0;
 function rnd(){ seedI=(seedI*9301+49297)%233280; return seedI/233280; }
-/* 地块：望全河、河埠头都看得见的三栋临河民居（按原生成结果里的位置挑；民居本身原样生成） */
-const SLOT_DEFS=[{id:'teahouse',side:-1,c:4.2},{id:'pavilion',side:1,c:-1.5},{id:'archway',side:-1,c:-8.9}];
-/* 这几栋临河民居换成 Tripo 的三种房子（models/manifest.json 的 scene 一栏登记了才换）。
-   房子的窗口事先按模型正面量好（归一化坐标），生成时就登记成「GLB 窗」：模型没出来前藏着，模型一出来，原民居藏起、GLB 窗接手点亮 */
-const GLB_HOUSES=[{id:'g1',side:-1,c:18.2,v:'house_c'},{id:'g2',side:-1,c:-41.3,v:'house_a'},{id:'g3',side:-1,c:-67.8,v:'house_b'},
-  {id:'g4',side:1,c:9.2,v:'house_a'},{id:'g5',side:1,c:29.4,v:'house_b'},{id:'g6',side:1,c:-53.5,v:'house_c'},{id:'g7',side:1,c:-77.9,v:'house_a'}];
+/* 地块：全部程序地块自动挑一个 Tripo 变体（原来 7 栋手写 GLB_HOUSES 的列表删掉，改成按地块宽度选）。
+   原奖励地块（SLOT_DEFS：teahouse/pavilion/archway）奖励功能已下线，也当普通民居地块处理。
+   房子窗口/灯按变体的 HOUSE_V 锚点登记成「GLB 窗」：模型没出来前藏着，模型一出来，原民居藏起、GLB 窗接手点亮 */
+/* HOUSE_V：变体锚点。H 目标世界高度(米)、hm 模型高度、zf 正面深度、W 模型正面宽度、
+   win 窗 [xm,ym,wm,hm]（xm 沿宽、ym 沿高、zf 前脸），lan 灯 [xm,ym]。加一种新民居 = manifest 登记一行 + 用
+   _check/measure_house.mjs 量出 HOUSE_V 后贴到这里。 */
 const HOUSE_V={
-  house_a:{H:8.6,hm:0.978,zf:0.448,win:[[-0.222,0.554,0.144,0.096],[0,0.554,0.205,0.096],[0.223,0.554,0.144,0.096],[-0.215,0.222,0.144,0.144],[0.216,0.222,0.144,0.144]],lan:[]},
-  house_b:{H:6.8,hm:0.839,zf:0.388,win:[[-0.24,0.29,0.2,0.18],[0.237,0.29,0.2,0.18]],lan:[]},
-  house_c:{H:8.6,hm:0.963,zf:0.490,win:[[-0.227,0.479,0.136,0.091],[-0.004,0.479,0.144,0.091],[0.219,0.479,0.136,0.091],[-0.235,0.188,0.136,0.113],[0.227,0.188,0.136,0.113]],lan:[[-0.33,0.34],[0.33,0.34]]}
+  house_a:{H:8.6,hm:0.978,zf:0.448,W:0.8209,win:[[-0.222,0.554,0.144,0.096],[0,0.554,0.205,0.096],[0.223,0.554,0.144,0.096],[-0.215,0.222,0.144,0.144],[0.216,0.222,0.144,0.144]],lan:[]},
+  house_b:{H:6.8,hm:0.839,zf:0.388,W:0.9815,win:[],lan:[[-0.44,0.42],[0.44,0.42]]},
+  house_c:{H:8.6,hm:0.963,zf:0.490,W:0.9079,win:[[-0.227,0.479,0.136,0.091],[-0.004,0.479,0.144,0.091],[0.219,0.479,0.136,0.091],[-0.235,0.188,0.136,0.113],[0.227,0.188,0.136,0.113]],lan:[[-0.33,0.34],[0.33,0.34]]},
+  house_d:{H:9.0,hm:0.8797,zf:0.4059,W:0.9778,win:[[-0.32,0.50,0.13,0.18],[-0.16,0.50,0.13,0.18],[0,0.50,0.13,0.18],[0.16,0.50,0.13,0.18],[0.32,0.50,0.13,0.18]],lan:[]},
+  house_e:{H:14.6,hm:0.9788,zf:0.3487,W:0.4028,win:[[-0.09,0.49,0.09,0.10],[0.09,0.49,0.09,0.10],[-0.15,0.22,0.08,0.10],[0.15,0.22,0.08,0.10]],lan:[]},
+  house_f:{H:4.4,hm:0.3889,zf:0.2638,W:0.9793,win:[[-0.39,0.14,0.11,0.12],[-0.13,0.14,0.11,0.12],[0.13,0.14,0.11,0.12],[0.39,0.14,0.11,0.12]],lan:[]},
+  house_g:{H:9.4,hm:0.9798,zf:0.4124,W:0.9340,win:[[-0.26,0.66,0.13,0.12],[0,0.66,0.13,0.12],[0.26,0.66,0.13,0.12],[-0.18,0.46,0.11,0.11],[0.18,0.46,0.11,0.11]],lan:[]}
 };
+const VARIANTS=Object.keys(HOUSE_V);
 const GLB_FRONT=9.5; // GLB 房子正面（含台阶）对齐到 |x|=9.5，压在步道边
-function glbHouseXform(def){ const V=HOUSE_V[def.v], k=V.H/V.hm, s=def.side; return {k,s,O:new THREE.Vector3(s*(GLB_FRONT+k*V.zf),BANK_TOP,def.c),ry:s>0?-Math.PI/2:Math.PI/2}; }
-function glbToWorld(def,xm,ym,zm){ const T=glbHouseXform(def); return new THREE.Vector3(T.O.x-T.s*T.k*zm,T.O.y+T.k*ym,T.O.z+T.s*T.k*xm); }
-const slots={};      // id -> {side,c,w,depth,group}
+const ALLEY=0.4;     // 房子之间预留的巷子缝（0.3-1 米允许范围内）
+/* 挑变体：按地块宽 w 选宽度最贴合（缩放后正面宽尽量接近地块宽减巷缝）、又不拉变形的变体
+   （水平/高度缩放比例差≤15%），并与上一栋不同款。评分用「宽度差（米）」而非比例，窄变体才不会被比例放大惩罚。 */
+function pickVariant(w,prev){
+  let best=null, bestScore=Infinity;
+  for(const v of VARIANTS){
+    if(v===prev) continue;
+    const V=HOUSE_V[v], k=V.H/V.hm, kx=(w-ALLEY)/V.W;
+    if(kx>k*1.15||kx<k*0.85) continue; // 比例差超 15%，拉变形，跳过
+    const gap=Math.abs(V.W*k-(w-ALLEY)); // 自然宽度和地块目标宽差多少米
+    const score=gap+rnd()*0.4; // 带一点随机保证多样性
+    if(score<bestScore){ bestScore=score; best=v; }
+  }
+  if(best) return best;
+  let bd=Infinity; // 都不合适就放宽，选比例差最小的
+  for(const v of VARIANTS){ if(v===prev) continue; const V=HOUSE_V[v],k=V.H/V.hm,kx=(w-ALLEY)/V.W; const d=Math.abs(kx-k); if(d<bd){bd=d;best=v;} }
+  return best;
+}
+/* 每个地块的变换：k 高度缩放、sx 宽度缩放（镜像为负）、s 岸向、O 原点、ry 朝向 */
+function glbHouseXform(def){ const V=HOUSE_V[def.v], k=V.H/V.hm, s=def.side;
+  const kx=Math.max(k*0.85,Math.min(k*1.15,(def.w-ALLEY)/V.W));
+  const sx=(def.mirror?-1:1)*kx;
+  return {k,s,sx,O:new THREE.Vector3(s*(GLB_FRONT+k*V.zf),BANK_TOP,def.c),ry:s>0?-Math.PI/2:Math.PI/2}; }
+function glbToWorld(def,xm,ym,zm){ const T=glbHouseXform(def); return new THREE.Vector3(T.O.x-T.s*T.k*zm,T.O.y+T.k*ym,T.O.z+T.s*T.sx*xm); }
+const slots={};      // id -> {side,c,w,depth,group,glb,mirror}
 const slotHidden={}; // id -> bool
+let slotI=0;
+const lastVar={1:null,'-1':null}, mirrorFlip={1:false,'-1':false};
 for(const side of [-1,1]){
   let z=34;
   while(z>-142){
     const w=7+rnd()*5;
     if(z-w/2>BRIDGE_Z+6 || z+w/2<BRIDGE_Z-6){
       const two=rnd()<0.62, sd=rnd()*10, c=z-w/2;
-      const sl=SLOT_DEFS.find(d=>d.side===side&&Math.abs(d.c-c)<0.3)||GLB_HOUSES.find(d=>d.side===side&&Math.abs(d.c-c)<0.3);
-      if(sl){ curSlot=sl.id; slots[sl.id]={side,c,w,depth:6+((sd*7)%3),twoFloor:two,group:null,glb:sl.v||null}; slotHidden[sl.id]=false; }
+      const v=pickVariant(w,lastVar[side]); lastVar[side]=v;
+      const mirror=mirrorFlip[side]; mirrorFlip[side]=!mirrorFlip[side];
+      const id='g'+(slotI++);
+      curSlot=id;
+      slots[id]={side,c,w,depth:6+((sd*7)%3),twoFloor:two,group:null,glb:v,mirror};
+      slotHidden[id]=false;
       house(side, c, w, two, sd);
-      if(sl&&sl.v){ /* GLB 房子的窗和灯：同一个地块，反着藏（原民居显示时它们藏着） */
-        const V=HOUSE_V[sl.v], T=glbHouseXform(sl);
-        for(const [xm,ym,wm,hm] of V.win){ const p=glbToWorld(sl,xm,ym,V.zf+0.01); addWindow(p.x,p.y,p.z,T.ry,0.45,wm*T.k/0.95,hm*T.k/1.15); windows[windows.length-1].glb=true; windows[windows.length-1].glbAnchor=[xm,ym]; }
-        for(const [xm,ym] of V.lan){ const p=glbToWorld(sl,xm,ym,V.zf+0.08); addLantern(p.x,p.y,p.z,0.32,1.0); lanterns[lanterns.length-1].glb=true; }
+      { /* GLB 房子的窗和灯：同一个地块，反着藏（原民居显示时它们藏着），等模型到位 setSlotHidden 接手 */
+        const def={id,side,c,w,v,mirror};
+        const V=HOUSE_V[v], T=glbHouseXform(def);
+        for(const [xm,ym,wm,hm] of V.win){ const p=glbToWorld(def,xm,ym,V.zf+0.01); addWindow(p.x,p.y,p.z,T.ry,0.45,wm*Math.abs(T.sx)/0.95,hm*T.k/1.15); windows[windows.length-1].glb=true; windows[windows.length-1].glbAnchor=[xm,ym]; }
+        for(const [xm,ym] of V.lan){ const p=glbToWorld(def,xm,ym,V.zf+0.08); addLantern(p.x,p.y,p.z,0.32,1.0); lanterns[lanterns.length-1].glb=true; }
       }
       curSlot=null;
     }
@@ -513,7 +549,7 @@ const winState=new Uint8Array(NW); // 1=亮
 for(let i=0;i<NW;i++) windows[i].base = hash01(i) < windows[i].p;
 const winHidden=i=>{ const w=windows[i]; if(!w.slot) return false; return w.glb?!slotHidden[w.slot]:!!slotHidden[w.slot]; };
 function applyWindow(i){
-  const h=winHidden(i);
+  const h=winHidden(i)||windows[i].drop;
   winLitIM.setMatrixAt(i, winState[i]&&!h?windows[i].m:ZERO_M);
   winDarkIM.setMatrixAt(i, winState[i]||h?ZERO_M:windows[i].m);
 }
@@ -525,6 +561,16 @@ function setSlotHidden(id,hidden){
   if(sl.group) sl.group.visible=!hidden;
   for(let i=0;i<windows.length;i++) if(windows[i].slot===id) applyWindow(i);
   winLitIM.instanceMatrix.needsUpdate=true; winDarkIM.instanceMatrix.needsUpdate=true;
+  renderer.shadowMap.needsUpdate=true;
+}
+/* 某个变体全部地块成功接管后，这些地块的程序民居再也不会显示：释放并移除其自有 merged geometry。
+   只 dispose 地块自有的几何，不碰 M 里的共享材质；失败变体不会调用这里，保留程序回退。 */
+let disposedGeoCount=0;
+function disposeSlotGeometry(id){
+  const sl=slots[id]; if(!sl||!sl.group) return;
+  sl.group.traverse(o=>{ if(o.isMesh&&o.geometry){ o.geometry.dispose(); disposedGeoCount++; } });
+  scene.remove(sl.group);
+  sl.group=null;
   renderer.shadowMap.needsUpdate=true;
 }
 function resetWindows(extraLit){
@@ -541,7 +587,7 @@ function lightWindow(near, quiet){
   _pv.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse); _frus.setFromProjectionMatrix(_pv);
   let best=-1, bs=Infinity;
   for(let i=0;i<NW;i++){
-    if(winState[i]||winHidden(i)) continue;
+    if(winState[i]||winHidden(i)||windows[i].drop) continue;
     const w=windows[i].pos;
     let sc = near ? w.distanceTo(near) : w.distanceTo(camera.position);
     if(!_frus.containsPoint(w)) sc+=400;
@@ -1130,7 +1176,11 @@ function postUpdate(dt){
   haloGeo.attributes.aSize.needsUpdate=true;
 }
 function render(){
+  /* 关掉 info.autoReset，统计这一帧 composer 全部 pass 累计的三角形/调用数，暴露给 window.__app.renderStats */
+  renderer.info.autoReset=false; renderer.info.reset();
   composer.render();
+  renderer.info.autoReset=true;
+  if(window.__app) window.__app.renderStats={triangles:renderer.info.render.triangles,calls:renderer.info.render.calls};
   if(!loaderDone && elapsed>0.3){
     const k=Math.min(1,(elapsed-0.3)/0.9), el=$('loader');
     el.style.opacity=String(1-k);
@@ -1166,10 +1216,13 @@ return {
   get water(){ return water; },
   saveView(){ return {p:camera.position.clone(),t:controls.target.clone(),tween,follow:S.follow}; },
   restoreView(v){ camera.position.copy(v.p); controls.target.copy(v.t); tween=v.tween; S.follow=v.follow; camera.lookAt(controls.target); },
-  slots, setSlotHidden, isSlotHidden:id=>!!slotHidden[id],
-  GLB_HOUSES, HOUSE_V, glbHouseXform,
+  slots, setSlotHidden, isSlotHidden:id=>!!slotHidden[id], disposeSlotGeometry, disposedGeoCount:()=>disposedGeoCount,
+  VARIANTS, HOUSE_V, glbHouseXform,
   /* GLB 房子加载后，按射线打到的真实墙面重新放窗（略微浮在墙面前面） */
   glbWindows(id){ const out=[]; windows.forEach((w,i)=>{ if(w.slot===id&&w.glb) out.push({i,anchor:w.glbAnchor,pos:w.pos.clone(),ry:w.ry}); }); return out; },
+  winDrops(){ return windows.map((w,i)=>({i,slot:w.slot,anchor:w.glbAnchor,drop:!!w.drop})); },
   setWindowPos(i,pos){ const w=windows[i]; const sc=new THREE.Vector3(); w.m.decompose(new THREE.Vector3(),new THREE.Quaternion(),sc); _e.set(0,w.ry,0); _q.setFromEuler(_e); w.m.compose(pos,_q,sc); w.pos.copy(pos); applyWindow(i); winLitIM.instanceMatrix.needsUpdate=true; winDarkIM.instanceMatrix.needsUpdate=true; },
+  /* 射线贴不准时把这一扇藏起来（不显示），避免亮窗压屋顶/飘空 */
+  dropWindow(i){ const w=windows[i]; if(!w) return; w.drop=true; applyWindow(i); winLitIM.instanceMatrix.needsUpdate=true; winDarkIM.instanceMatrix.needsUpdate=true; },
 };
 })();

@@ -198,9 +198,10 @@ select{width:100%;background:var(--ink2);color:var(--paper);border:1px solid var
 #emptyHint a.emptylink{color:var(--gold);font-size:12px;letter-spacing:.06em;text-decoration:none;border-bottom:1px dashed rgba(217,164,65,.5)}
 #emptyHint a:hover{filter:brightness(1.1)}
 #toast{position:fixed;left:50%;bottom:76px;transform:translateX(-50%);z-index:45;pointer-events:none;opacity:0;
-  padding:8px 18px;border-radius:999px;background:var(--panel);border:1px solid var(--line);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-  font-size:12.5px;letter-spacing:.18em;color:var(--paper);white-space:nowrap}
+  width:max-content;max-width:calc(100vw - 24px);padding:8px 18px;border-radius:16px;background:var(--panel);border:1px solid var(--line);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  font-size:12.5px;letter-spacing:.18em;color:var(--paper);text-align:center;white-space:normal;overflow-wrap:anywhere}
 #toast.show{animation:toast 3.4s ease forwards}
+#toast.show.long{animation-duration:9s}
 @keyframes toast{0%{opacity:0;transform:translate(-50%,8px)}10%,80%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,-4px)}}
 
 /* 三选一 */
@@ -274,9 +275,9 @@ select{width:100%;background:var(--ink2);color:var(--paper);border:1px solid var
   #views .hint{display:none}
   .vbtn{padding:6px 11px;font-size:11px}
   #offline{right:14px;left:14px;bottom:112px;text-align:right;font-size:10.5px}
-  #hint{bottom:156px}
+  #hint{bottom:auto;top:46%}
   #emptyHint{bottom:192px;max-width:calc(100vw - 24px)}
-  #toast{bottom:156px}
+  #toast{bottom:auto;top:128px;z-index:60;background:rgba(20,16,26,.94);letter-spacing:.08em;line-height:1.6}
   .cards{grid-template-columns:1fr;gap:10px}
   .card{min-height:0;padding:12px 14px 14px}
   .card b{font-size:23px;margin:8px 0 4px}

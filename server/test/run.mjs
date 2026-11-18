@@ -674,12 +674,12 @@ test('设置：合并保存并做范围校验', () => {
   assert.ok(r.errors);
 });
 
-test('设置：反馈方式 feedbackStyle 默认 lantern，只认 lantern/muyu/both，存档坏值回落默认', () => {
-  assert.equal(DEFAULT_SETTINGS.feedbackStyle, 'lantern');
+test('设置：反馈方式 feedbackStyle 默认 both，只认 lantern/muyu/both，存档坏值回落默认', () => {
+  assert.equal(DEFAULT_SETTINGS.feedbackStyle, 'both');
   for (const v of ['lantern', 'muyu', 'both']) assert.equal(mergeSettings(DEFAULT_SETTINGS, { feedbackStyle: v }).settings.feedbackStyle, v);
   for (const v of ['Muyu', '', 'fish', 1, null, true]) assert.ok(mergeSettings(DEFAULT_SETTINGS, { feedbackStyle: v }).errors, String(v));
   assert.equal(sanitizeSettings({ feedbackStyle: 'both' }).feedbackStyle, 'both');
-  assert.equal(sanitizeSettings({ feedbackStyle: 'x' }).feedbackStyle, 'lantern');
+  assert.equal(sanitizeSettings({ feedbackStyle: 'x' }).feedbackStyle, 'both');
   assert.ok(mergeSettings(DEFAULT_SETTINGS, { feedbackStyle: 'muyu', lanternUnit: 3 }).errors); // 一项不合法整次不合并
 });
 
@@ -980,7 +980,7 @@ test('HTTP：/api/state 字段和 DESIGN.md 第七节一致', () => withServer(a
   for (const k of ['tokens', 'aiMinutes', 'presentFocusMin', 'soloFocusMin', 'segments']) assert.equal(typeof s.today[k], 'number', `today.${k}`);
   for (const k of ['progressMin', 'targetMin', 'idleMin']) assert.equal(typeof s.segment[k], 'number', `segment.${k}`);
   assert.deepEqual(Object.keys(s.settings).sort(), ['activeMin', 'endMin', 'feedbackStyle', 'gapMin', 'lanternUnit', 'muted', 'presentOnly', 'segmentMin', 'volume']);
-  assert.equal(s.settings.feedbackStyle, 'lantern');
+  assert.equal(s.settings.feedbackStyle, 'both');
   assert.equal(s.settings.lanternUnit, 1000);
   assert.equal(s.settings.volume, 0.3);
   assert.equal(s.sessions[0].label, '演示项目');

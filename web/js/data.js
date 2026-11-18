@@ -7,7 +7,7 @@ JN.Data = (function(){
 'use strict';
 const params=new URLSearchParams(location.search);
 const DEMO=params.get('demo')==='1';
-const DEFAULT_SETTINGS={activeMin:3,segmentMin:25,gapMin:5,endMin:10,presentOnly:false,volume:0.3,muted:false,lanternUnit:1000,feedbackStyle:'lantern'};
+const DEFAULT_SETTINGS={activeMin:3,segmentMin:25,gapMin:5,endMin:10,presentOnly:false,volume:0.3,muted:false,lanternUnit:1000,feedbackStyle:'both'};
 const listeners={state:[],beat:[],status:[]};
 const SOURCES=['claude','codex','deepseek','grok','magpie','cursor'];
 const api={mode:DEMO?'demo':'live', state:null, connected:DEMO, lastStateAt:0, DEFAULT_SETTINGS};

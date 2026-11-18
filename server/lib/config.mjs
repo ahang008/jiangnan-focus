@@ -117,7 +117,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
   activeMin: 3, segmentMin: 25, gapMin: 5, endMin: 10,
   presentOnly: false, volume: 0.3, muted: false,
   lanternUnit: 1000, // 网页孔明灯：今日 token 每满多少放一盏
-  feedbackStyle: 'lantern', // 每满一个单位的反馈：lantern 放孔明灯 / muyu 敲木鱼 / both 两样都要
+  feedbackStyle: 'both', // 每满一个单位的反馈：lantern 放孔明灯 / muyu 敲木鱼 / both 两样都要
 });
 
 const RULES = {

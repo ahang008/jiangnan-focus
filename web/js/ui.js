@@ -33,6 +33,28 @@ function fmtTok(n){
 }
 function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.remove('show'); void t.offsetWidth; t.classList.add('show'); }
 
+/* 首次提示文案按实际生效的 feedbackStyle 生成（演示模式 ?fb= 覆盖也一致） */
+const TIP_TEXT={
+  both:'孔明灯和木鱼都开着 · 右上角「设置」里可以换，还能生成今日回顾卡',
+  lantern:'现在是放孔明灯 · 右上角「设置」里还能打开木鱼、生成今日回顾卡',
+  muyu:'现在是敲木鱼 · 右上角「设置」里还能打开孔明灯、生成今日回顾卡'
+};
+function fbStyleOf(s){
+  const FBS=['lantern','muyu','both'];
+  const fix=new URLSearchParams(location.search).get('fb');
+  if(D.mode==='demo'&&FBS.includes(fix)) return fix;
+  return FBS.includes(s.settings.feedbackStyle)?s.settings.feedbackStyle:'both';
+}
+let tipShown=false;
+function maybeShowFirstTip(){
+  if(tipShown||!state) return;
+  let show=false;
+  try{ if(localStorage.getItem('jnfocus.tip1')!=='1'){ localStorage.setItem('jnfocus.tip1','1'); show=true; } }catch(e){}
+  if(!show) return;
+  tipShown=true;
+  setTimeout(()=>{ const t=$('toast'); t.classList.add('long'); toast(TIP_TEXT[fbStyleOf(state)]||TIP_TEXT.both); setTimeout(()=>t.classList.remove('long'),9500); },4000);
+}
+
 /* ---------- 浮层开关（同一时间只开一个） ---------- */
 const PANELS=['panel','settings','album'];
 const BTN={panel:'panelBtn',settings:'setBtn',album:'albumBtn'};
@@ -72,7 +94,7 @@ function fillSettings(force){
   $('cHide').checked=readHideProjects();
   $('cUnit').value=String([500,1000,2000,5000].includes(s.lanternUnit)?s.lanternUnit:1000);
   $('fbUnit').textContent=$('cUnit').value;
-  $('cFb').value=['lantern','muyu','both'].includes(s.feedbackStyle)?s.feedbackStyle:'lantern';
+  $('cFb').value=['lantern','muyu','both'].includes(s.feedbackStyle)?s.feedbackStyle:'both';
 
   settingsDirty=false;
 }
@@ -221,6 +243,7 @@ function onState(s){
   if(!$('settings').hidden) fillSettings(false); else fillSettings(true);
   if(REWARDS_ON&&!$('album').hidden) renderAlbum();
   firstState=false;
+  maybeShowFirstTip();
 }
 function onStatus(st){ $('offline').hidden=D.mode==='demo'||!!st.connected; if(D.mode!=='demo'&&!st.connected) $('fState').textContent='等本地小程序'; }
 function onSegmentDone(){
@@ -254,6 +277,7 @@ function init(list){
   ['nActive','nSegment','nGap','nEnd'].forEach(id=>$(id).addEventListener('input',()=>{ settingsDirty=true; $('saveNote').textContent=''; }));
   $('cPresent').addEventListener('change',()=>{ settingsDirty=true; $('saveNote').textContent=''; });
   $('bSaveRules').addEventListener('click',saveRules);
+  /* 第一次打开：提示一次新玩法在哪（只提示一次；文案等拿到第一次 state 后按实际设置生成） */
   $('bRecap').addEventListener('click',()=>{ if(!JN.Recap) return; $('bRecap').disabled=true; JN.Recap.open().catch(()=>toast('回顾卡没生成出来')).then(()=>{ $('bRecap').disabled=false; }); });
   $('cFb').addEventListener('change',e=>{ const v=e.target.value; D.saveSettings({feedbackStyle:v}).then(()=>toast(v==='muyu'?'改为敲木鱼':v==='both'?'孔明灯和木鱼两样都要':'改为放孔明灯'),()=>toast('没存上：本地小程序没开')); });
   $('cHide').addEventListener('change',e=>{ const v=e.target.checked; saveHideProjects(v); if(JN.Fleet&&JN.Fleet.setHideProjects) JN.Fleet.setHideProjects(v); });
